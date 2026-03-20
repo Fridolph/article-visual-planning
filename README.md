@@ -21,6 +21,22 @@ The skill can also provide:
 - data or reference visualizations for metrics, comparisons, and quote cards
 - cover image direction for article distribution
 
+But by default, the deliverable is a text plan, not a batch of generated SVG or PNG assets.
+
+## Trigger style
+
+This skill should work with short, natural requests. The user should not need to write a long control prompt every time.
+
+Requests like these should trigger it by default:
+
+- analyze article visuals
+- recommend visuals for this post
+- generate article visual suggestions
+- how should this article be illustrated
+- suggest a cover and body visuals for this blog post
+
+Here, "generate" should still default to "generate the recommendation document", not "start producing SVG or PNG files".
+
 ## Output shape
 
 The skill now defaults to a per-image output shape instead of a dense recommendation dump.
@@ -51,17 +67,29 @@ Prompt or brief: ...
 
 This makes the output easier to scan and, more importantly, makes the production decision explicit: author screenshot, screenshot plus annotation, AI-generated diagram, or external image prompting.
 
+## Default delivery mode
+
+This skill should usually unblock the user quickly:
+
+- default to a Markdown visual plan
+- if the user asks to save into the article directory, write a text plan file first
+- only enter asset generation when the user explicitly asks for `svg`, `png`, Mermaid, a rendered cover, or another concrete visual artifact
+- even if the user says "recommend and generate", treat that as "generate the recommendation output" unless the requested artifact type is explicit
+
+This keeps the planning step fast and prevents the skill from getting stuck generating large assets before the article guidance is ready.
+
 If you want to inspect the full example flow, start here:
 
-- Sample article: `/Users/fri/Desktop/my-skills/article-visual-planning/skill/article-visual-planning/examples/sample-article.en.md`
-- Sample output: `/Users/fri/Desktop/my-skills/article-visual-planning/skill/article-visual-planning/examples/sample-output.en.md`
+- Sample article: `/Users/fri/Desktop/my-skills/article-visual-planning/examples/sample-article.en.md`
+- Sample output: `/Users/fri/Desktop/my-skills/article-visual-planning/examples/sample-output.en.md`
 
 ## Repo layout
 
 ```text
-skill/article-visual-planning/
+.
   SKILL.md
-  agents/openai.yaml
+  agents/
+    openai.yaml
   examples/
     sample-article.en.md
     sample-article.zh-CN.md
@@ -95,4 +123,4 @@ Each recommendation should clearly name one production path:
 - AI image prompt
 - no illustration needed
 
-See `/skill/article-visual-planning` for the publishable skill.
+See `/Users/fri/Desktop/my-skills/article-visual-planning/SKILL.md` for the publishable skill.

@@ -21,6 +21,22 @@
 - 截图增强建议：箭头、框选、局部放大、前后对比拼图
 - 封面题图建议：用于掘金头图、博客头图、社交传播封面
 
+但默认情况下，它先交付的是“文本方案”，不是直接替你生成一堆 SVG / PNG。
+
+## 触发方式
+
+这个 skill 应该支持比较自然的短指令，不需要你每次都写很长的约束。
+
+例如这些说法，都应该默认触发它：
+
+- 帮我分析文章配图
+- 给这篇文章做配图建议
+- 生成文章配图
+- 看看这篇文怎么配图
+- 给这篇博客做题图和正文配图建议
+
+而且这里的“生成”，默认理解成“生成配图建议文档”，不是直接开始生成 SVG / PNG 文件。
+
 ## 输出长什么样
 
 这个 skill 现在默认用“按图逐条展开”的方式输出，而不是一大段挤在一起的说明。
@@ -51,17 +67,29 @@
 
 这样做的目的很简单：让作者和后续用户第一眼就知道，这张图到底该自己截图、自己轻标注、让 AI 画结构图，还是直接去跑生图提示词。
 
+## 默认交付方式
+
+这个 skill 默认是“先快出方案，再决定要不要产图”：
+
+- 默认直接输出 Markdown 配图建议
+- 如果用户要求“写到文章目录里”，优先写一个文本方案文件，例如 `visual-plan.md`
+- 只有用户明确要求 `svg`、`png`、Mermaid、题图成品、结构图文件时，才进入产图阶段
+- 就算用户一句话里同时提到“推荐”和“生成”，也应该先完成配图决策，再决定是否继续产出素材
+
+这样可以避免在正文建议还没落下来的时候，就被 SVG 或流程图生成卡住。
+
 如果你想直接看完整示例，可以先看：
 
-- 示例文章：`/Users/fri/Desktop/my-skills/article-visual-planning/skill/article-visual-planning/examples/sample-article.zh-CN.md`
-- 示例输出：`/Users/fri/Desktop/my-skills/article-visual-planning/skill/article-visual-planning/examples/sample-output.zh-CN.md`
+- 示例文章：`/Users/fri/Desktop/my-skills/article-visual-planning/examples/sample-article.zh-CN.md`
+- 示例输出：`/Users/fri/Desktop/my-skills/article-visual-planning/examples/sample-output.zh-CN.md`
 
 ## 当前结构
 
 ```text
-skill/article-visual-planning/
+.
   SKILL.md
-  agents/openai.yaml
+  agents/
+    openai.yaml
   examples/
     sample-article.en.md
     sample-article.zh-CN.md
@@ -95,4 +123,4 @@ skill/article-visual-planning/
 
 这比只说“建议配一张图”更有用，因为真正会卡住用户的，往往不是“有没有图”，而是“这张图到底该怎么产出”。
 
-Skill 本体在 `/skill/article-visual-planning`。
+Skill 本体在 `/Users/fri/Desktop/my-skills/article-visual-planning/SKILL.md`。

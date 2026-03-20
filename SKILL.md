@@ -1,6 +1,6 @@
 ---
 name: article-visual-planning
-description: Analyze an article, blog post, newsletter draft, or long-form outline and make editorial illustration decisions before any image is produced. Use when Codex needs to judge whether a section should have a visual at all, what job that visual should do, which visual class fits best, whether it should be a diagram, chart, abstract support image, real screenshot, screenshot enhancement, or cover image, and whether the author must create it manually. This skill is primarily for visual planning and decision support, not for directly generating final images, though it may provide prompts or briefs when helpful.
+description: Analyze an article, blog post, newsletter draft, or long-form outline and make editorial illustration decisions before any image is produced. Trigger when the user asks to analyze article visuals, recommend article illustrations, generate article visual suggestions, plan blog post images, or in Chinese asks for 分析文章配图、推荐文章配图、生成文章配图、配图建议、文章插图建议、题图建议. Use when Codex needs to judge whether a section should have a visual at all, what job that visual should do, which visual class fits best, whether it should be a diagram, chart, abstract support image, real screenshot, screenshot enhancement, or cover image, and whether the author must create it manually. This skill is primarily for visual planning and decision support, not for directly generating final images, though it may provide prompts or briefs when helpful.
 ---
 
 # Article Visual Planning
@@ -15,6 +15,7 @@ Treat this skill as an editorial advisor:
 - then decide what kind of visual would help
 - then decide who should make it and how
 - only then provide prompts or production guidance
+- default to a text plan, not generated image files
 
 ## Language rule
 
@@ -22,6 +23,35 @@ Treat this skill as an editorial advisor:
 - If the user writes in Chinese, keep the full output in Chinese, including section headings and recommendation labels.
 - If the user writes in English, keep the full output in English.
 - Do not mix English field labels into a Chinese recommendation unless the user explicitly asks for bilingual output.
+
+## Execution mode
+
+### Trigger cues
+
+- This skill should trigger for short, natural requests such as:
+  - "帮我分析文章配图"
+  - "给这篇文章做配图建议"
+  - "生成文章配图"
+  - "看看这篇文怎么配图"
+  - "给这篇博客做题图和正文配图建议"
+- Treat these requests as planning requests by default, not asset-generation requests.
+- The presence of the verb "生成" does not override the text-first default unless the user explicitly names the output artifact, such as `svg`, `png`, Mermaid, cover image file, or rendered diagram.
+
+### Default mode: text-first planning
+
+- By default, this skill should return a fast Markdown recommendation, not final visual assets.
+- Short requests like "分析文章配图", "生成文章配图", or "配图建议" should still stay in this mode.
+- If the user asks to "generate", "save", or "put the result into a directory", interpret that as saving a text planning document unless they explicitly ask for image files.
+- When file output is requested but the asset type is not specified, write one Markdown plan file such as `visual-plan.md`, `image-plan.md`, or another clearly named planning note near the article.
+- If the article path is clear, prefer the output filename `visual-plan.md` in the same directory as the article.
+- Keep the first pass lightweight and unblock the user quickly.
+
+### Asset mode: explicit and separate
+
+- Only generate actual assets when the user explicitly asks for them, for example: `svg`, `png`, `cover image`, `Mermaid diagram`, `draw this`, `export`, or `render`.
+- Prefer a two-step flow when possible: first planning, then asset generation.
+- If the user asks for both planning and final assets in one sentence, still finish the planning decision first and keep generated assets minimal.
+- Never let SVG, Mermaid, or other long asset markup dominate the planning step.
 
 ## Workflow
 
@@ -87,6 +117,7 @@ Read `references/illustration-taxonomy.md` when the article has mixed signals or
 - Recommend redaction, annotation, and crop guidance for manual captures.
 - Flag risky ideas: copyrighted logos, fake dashboards, unreadable dense diagrams, or visuals that require information the author does not have.
 - Keep recommendations short and editorial. Do not over-explain obvious tradeoffs.
+- If the user wants the result written to disk, prefer writing a short Markdown plan over writing image assets.
 
 ## Output format
 
@@ -175,7 +206,14 @@ If replying in Chinese, localize section titles too:
 
 Read `references/prompt-patterns.md` when you need prompt wording patterns or screenshot brief templates.
 
-### 4. Optional tradeoff note
+### 4. Optional file delivery note
+
+- Add this section only when the user asked to save or write the result into the article directory.
+- Keep it to 1-3 bullets.
+- Say exactly what text file should be created, for example `visual-plan.md`.
+- Do not use this section to announce generated SVG or PNG files unless the user explicitly asked for those formats.
+
+### 5. Optional tradeoff note
 
 - Add this section only if there is a real choice to make.
 - Keep it to 1-2 bullets.
@@ -188,6 +226,11 @@ Read `references/prompt-patterns.md` when you need prompt wording patterns or sc
 - Do not recommend more manual screenshot work than the article can justify.
 - Prefer legible, low-ink diagrams over overloaded diagrams.
 - Do not behave like an image generation skill unless the user explicitly asks for prompts after planning.
+- Do not create `.svg`, `.png`, `.jpg`, `.webp`, `.drawio`, or other image assets during the default planning step.
+- Do not generate long Mermaid or SVG blocks unless the user explicitly asks for a diagram artifact.
+- If the user says "generate into this directory" but does not name an image format, create a Markdown plan file instead of visual assets.
+- Treat "recommend and generate" as "generate the recommendation output" unless the user clearly requests final images.
+- Keep planning fast; avoid long-running asset generation that blocks the recommendation itself.
 - If article structure is weak, say so and suggest improving the outline before investing in illustration.
 - Avoid repetitive compare/contrast commentary. Give the decision, then the reason, then move on.
 - Prefer "what to make" over "all possible options".

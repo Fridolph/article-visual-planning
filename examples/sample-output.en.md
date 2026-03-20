@@ -6,6 +6,7 @@
 - Prioritize credibility over decoration: the most important sections should use real screenshots.
 - Skip visuals for the intro and conclusion.
 - The strongest body visuals are the execution table and the `SKILL.md` screenshot; treat the cover separately.
+- Default to a text visual plan first, not SVG or image files.
 
 ## Recommended visuals
 
@@ -61,6 +62,12 @@ Prompt or brief: practical lessons from three official Codex guides, for enginee
 
 - Keep screenshots real and clean; annotate only when the focal point is not obvious.
 - Favor readability over decoration, especially in narrow blog layouts.
+
+## File delivery note (optional)
+
+- If the user only says "analyze article visuals" or "generate article visual suggestions", still return a text plan by default.
+- If the user only says "generate into the article directory", write a text plan file such as `visual-plan.md` first.
+- Only generate `svg`, `png`, Mermaid, or other visual artifacts when the requested asset type is explicit.
 
 ## Optional tradeoff note
 
