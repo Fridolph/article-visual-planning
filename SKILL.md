@@ -16,6 +16,13 @@ Treat this skill as an editorial advisor:
 - then decide who should make it and how
 - only then provide prompts or production guidance
 
+## Language rule
+
+- Reply in the user's language by default.
+- If the user writes in Chinese, keep the full output in Chinese, including section headings and recommendation labels.
+- If the user writes in English, keep the full output in English.
+- Do not mix English field labels into a Chinese recommendation unless the user explicitly asks for bilingual output.
+
 ## Workflow
 
 ### 1. Read for publishing intent
@@ -79,51 +86,100 @@ Read `references/illustration-taxonomy.md` when the article has mixed signals or
 - Prefer screenshots over generated images when the article claims real product experience.
 - Recommend redaction, annotation, and crop guidance for manual captures.
 - Flag risky ideas: copyrighted logos, fake dashboards, unreadable dense diagrams, or visuals that require information the author does not have.
+- Keep recommendations short and editorial. Do not over-explain obvious tradeoffs.
 
 ## Output format
 
-Always return four sections in this order.
+Always return concise Markdown sections in this order. Do not use tables unless the user explicitly asks for one.
 
-### 1. Visual strategy summary
+The output must be scannable at first glance:
 
-- Summarize the article's visual needs in 3-5 bullets.
-- State the recommended visual density.
-- Mention any constraints you inferred.
+- each recommended visual gets its own heading
+- the production method must be explicit near the top of each block
+- the reader should know immediately whether this is author work, AI diagram work, AI image prompting, or screenshot enhancement
+- keep the execution hint inside the same block whenever possible so the user does not need to jump between sections
 
-### 2. Visual plan table
+### 1. Verdict first
 
-Use a compact table with these columns:
+- Start with 2-4 short bullets only.
+- Lead with the main conclusion first, for example:
+  - "Recommend 4 images total."
+  - "Prioritize author screenshots and one AI diagram."
+- Mention what to skip before listing what to make.
+- Keep this section punchy and editorial, not analytical.
 
-- `slot`
-- `section`
-- `goal`
-- `reader_job`
-- `visual_class`
-- `production_mode`
-- `author_action`
-- `priority`
-- `why_here`
-- `production_path`
-- `optional`
+### 2. Recommended visuals
 
-### 3. Detailed briefs
+List only the visuals that are actually worth making.
 
-For each recommended slot, include a brief based on its class:
+Start with one short sentence:
 
-- `Diagram-first`: diagram type, required nodes or stages, suggested labels, optional Mermaid starter.
-- `Generative illustration prompt`: prompt, optional negative prompt, style notes, aspect ratio, text-avoidance guidance.
-- `Author-captured evidence`: what to capture, where to navigate, exact page or state, crop focus, annotation ideas, redaction checklist.
-- `Data or reference visualization`: chart/card type, exact data points, labels, ordering, caption suggestion.
-- `Screenshot enhancement`: annotation plan, crop plan, comparison layout, and what should be visually emphasized.
-- `Cover image`: title mood, topic metaphor, composition direction, and platform-fit notes.
+`Suggested image count: X.`
+
+Then list each recommendation as a self-contained block.
+
+Use this exact shape:
+
+```md
+## Image 1 Title
+
+Put it at: [section / paragraph / sentence anchor]
+Priority: [must / recommended / optional]
+Production method: [author screenshot / author screenshot + annotation / AI-generated diagram / AI image prompt / no image]
+Recommended visual: [what the image should show]
+Why: [one sentence]
+Execution: [the most direct way to make it]
+Prompt or brief: [only when execution would be easier with one]
+```
+
+If replying in Chinese, localize the shape like this:
+
+```md
+## 图1 标题
+
+放在：[章节 / 段落 / 句子锚点]
+优先级：[必做 / 推荐 / 可选]
+生产方式：[作者手动截图 / 作者截图+轻标注 / AI 直接生成结构图 / AI 生图提示词 / 不建议配图]
+推荐图：[这张图具体要表现什么]
+为什么：[一句话]
+怎么做：[最直接的制作方式]
+提示词或 brief：[只有真的能帮用户直接执行时才写]
+```
+
+Rules:
+
+- Default to 3-6 slots total.
+- Omit low-value extras unless the user asks for more coverage.
+- If a section should not get a visual, do not create a slot for it.
+- Always surface `生产方式 / Production method` before the long explanation.
+- Prefer headings such as `图1 标题图`, `图2 决策分流图`, `图3 6+1 分类图` over generic `配图建议 1`.
+- Keep each block compact, but do not hide the execution decision.
+- Give the decision first; do not walk through alternatives unless there is a real tradeoff.
+
+### 3. Shared production notes (optional)
+
+Only include this section when multiple visuals share the same constraint or when the prompts would become repetitive.
+
+Examples:
+
+- one shared note about article width, safe text size, or color direction
+- one shared reminder about redaction or annotation style
+- one shared prompt rule for all generative illustrations
+
+If replying in Chinese, localize section titles too:
+
+- `Verdict first` -> `结论先说`
+- `Recommended visuals` -> `推荐配图`
+- `Shared production notes (optional)` -> `统一制作说明（按需使用）`
+- `Optional tradeoff note` -> `可选取舍`
 
 Read `references/prompt-patterns.md` when you need prompt wording patterns or screenshot brief templates.
 
-### 4. Editorial notes
+### 4. Optional tradeoff note
 
-- Call out any visuals to skip.
-- Mention sequencing advice if the article should alternate dense and light sections.
-- Mention platform-specific advice when relevant, such as keeping Juejin visuals clean and immediately readable on a narrow article column.
+- Add this section only if there is a real choice to make.
+- Keep it to 1-2 bullets.
+- Use it for "if you only make 3 images, keep these" or "if you skip one, skip this one".
 
 ## Guardrails
 
@@ -133,3 +189,6 @@ Read `references/prompt-patterns.md` when you need prompt wording patterns or sc
 - Prefer legible, low-ink diagrams over overloaded diagrams.
 - Do not behave like an image generation skill unless the user explicitly asks for prompts after planning.
 - If article structure is weak, say so and suggest improving the outline before investing in illustration.
+- Avoid repetitive compare/contrast commentary. Give the decision, then the reason, then move on.
+- Prefer "what to make" over "all possible options".
+- Prefer natural language recommendations over rigid schemas when readability matters.

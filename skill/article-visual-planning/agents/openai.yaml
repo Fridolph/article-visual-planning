@@ -1,6 +1,0 @@
-interface:
-  display_name: "Article Visual Planning"
-  short_description: "Plan diagrams, prompts, and screenshots"
-  default_prompt: "Use $article-visual-planning to analyze this article and suggest diagrams, image prompts, and screenshot guidance."
-policy:
-  allow_implicit_invocation: true
